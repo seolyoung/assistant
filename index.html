@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>내부회계통제 사무보조</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* HD현대 CI: Discovery Blue #003087 · Trust Blue #002554 · 초록은 채도를 낮춘 값 */
+:root { --bg: #eef2f6; --surface: #fbfcfd; --line: #d4dce6; --fg: #1a2433; --muted: #5b6a7c; --accent: #003087; --navy: #002554; --green: #3a9a57; --accent-soft: #e6ecf6;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111821; --surface: #17202b; --line: #29364a; --fg: #e2e8f0; --muted: #93a2b5; --accent: #7a9fe0; --navy: #c9d6ee; --green: #6fb487; --accent-soft: #19284a; color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); line-height: 1.6; }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 56px 64px; }
+h1 { margin: 0; font-size: 2rem; color: var(--navy); letter-spacing: -0.02em; text-wrap: balance; }
+h1::after { content: ""; display: block; width: 56px; height: 3px; margin-top: 10px; border-radius: 2px; background: linear-gradient(90deg, var(--accent), var(--green)); }
+.lead { margin: 18px 0 0; color: var(--muted); max-width: 60ch; }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; margin: 22px 0 0; padding: 0; list-style: none; font-size: 0.88rem; }
+.flow li { padding: 4px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.flow li b { color: var(--accent); margin-right: 4px; font-weight: 600; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 32px; }
+.card { display: flex; flex-direction: column; gap: 8px; padding: 22px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); color: inherit; text-decoration: none; }
+.card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+.card h2 { margin: 0; font-size: 1.15rem; color: var(--navy); }
+.card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.card .go { margin-top: auto; padding-top: 8px; font-weight: 600; color: var(--accent); font-size: 0.92rem; }
+.tag { align-self: flex-start; font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.note { margin-top: 28px; font-size: 0.82rem; color: var(--muted); }
+</style>
+<div class="wrap">
+  <h1>내부회계통제 사무보조</h1>
+  <p class="lead">금융기관 조회 업무를 단계별 시트로 나눠, 알바생 두 명이 각자 맡은 금융기관의 진행 상황을 체크하며 관리하는 페이지입니다.</p>
+  <ol class="flow">
+    <li><b>1</b>조회 요청</li><li><b>2</b>필요서류 확인</li><li><b>3</b>서류 발송</li><li><b>4</b>결과 회신</li>
+  </ol>
+  <div class="cards">
+    <a class="card" href="demo.html">
+      <span class="tag">처음이라면</span>
+      <h2>체험판 둘러보기</h2>
+      <p>가상의 예시 데이터가 들어 있습니다. 마음대로 눌러 봐도 되고, 새로고침하면 처음 상태로 돌아갑니다.</p>
+      <span class="go">체험판 열기 →</span>
+    </a>
+    <a class="card" href="app.html">
+      <span class="tag">실제로 쓰기</span>
+      <h2>빈 양식으로 시작</h2>
+      <p>단계·열 구성과 업무 설명만 들어 있는 빈 양식입니다. 입력한 내용은 쓰는 사람의 브라우저에 저장되고, 백업 파일로 옮길 수 있습니다.</p>
+      <span class="go">양식 열기 →</span>
+    </a>
+  </div>
+  <p class="note">입력한 내용은 서버로 전송되지 않고 각자의 브라우저에만 저장됩니다. 회사 업무 정보를 입력하기 전에 회사 보안 정책을 확인하세요.</p>
+</div>
+
+</body>
+</html>
