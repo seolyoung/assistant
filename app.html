@@ -69,7 +69,8 @@ button.danger { color: var(--danger); }
 button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .banner.local { border-style: solid; background: var(--surface); }
-.banner .bk { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.merge-box { flex-direction: column; align-items: flex-start; }
+.banner .bk, .confirm .bk { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 .banner.demo { border: 1px solid var(--accent); background: var(--accent-soft); color: var(--fg); border-style: solid; }
 .banner { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 0.88rem; }
 
@@ -746,6 +747,7 @@ window.LOCAL_SEED = {"ex1": {"checkHeader": "", "checkLabel": "연결여부", "c
         ${w ? `<div class="stage-actions">
           <button type="button" class="ghost" data-act="left" ${i === 0 ? "disabled" : ""} title="시트를 왼쪽으로">← 앞으로</button>
           <button type="button" class="ghost" data-act="right" ${i === list.length - 1 ? "disabled" : ""} title="시트를 오른쪽으로">뒤로 →</button>
+          <button type="button" class="ghost" data-act="copy-sheet" title="이 시트 표를 복사해 엑셀에 붙여넣을 수 있습니다">엑셀로 복사</button>
           <button type="button" class="ghost" data-act="edit-stage">이름 수정</button>
           <button type="button" class="ghost danger" data-act="del-stage">시트 삭제</button></div>` : ""}</div>`;
     const confirm = S.confirm === "stage:" + s.id
@@ -803,8 +805,14 @@ window.LOCAL_SEED = {"ex1": {"checkHeader": "", "checkLabel": "연결여부", "c
     if (S.confirm === "examples") banner = `<div class="confirm">예시 시트 ${list.filter((s) => s.example).length}개를 모두 지울까요? 되돌릴 수 없습니다.
         <button type="button" class="danger" data-act="clear-examples-yes">지우기</button><button type="button" data-act="cancel-confirm">취소</button></div>`;
     if (S.local) banner = `<div class="banner local"><span>입력한 내용은 <b>지금 이 브라우저에만</b> 저장됩니다. 다른 컴퓨터로 옮기거나 인수인계할 때는 백업 파일을 저장해 전달하세요.</span>
-      <span class="bk"><button type="button" data-act="backup">백업 파일 저장</button><button type="button" data-act="restore">백업 불러오기</button></span></div>` + banner;
+      <span class="bk"><button type="button" data-act="backup">백업 파일 저장</button><button type="button" data-act="restore">백업 불러오기</button><button type="button" data-act="merge">다른 사람 기록 합치기</button><button type="button" class="danger" data-act="wipe">전체 삭제</button></span></div>` + banner;
     if (window.DEMO_DATA) banner = `<div class="banner demo"><span><b>체험용 예시 페이지</b>입니다. 이름·연락처는 모두 가상의 예시이고, 자유롭게 눌러 보셔도 됩니다. 새로고침하면 처음 상태로 돌아갑니다.</span></div>` + banner;
+    if (S.confirm && S.confirm.merge) {
+      banner = `<div class="confirm merge-box"><div><b>‘${esc(S.confirm.name)}’</b>에서 가져올 담당을 고르세요. 고른 담당의 금융기관과 2~4단계 기록이 이 파일의 내용으로 바뀌고, 다른 담당 기록은 그대로 둡니다.</div>
+        <div class="bk">${S.confirm.groups.map((g) => `<button type="button" data-act="merge-yes" data-g="${g.id}">${esc(g.label)}${g.owner ? " · " + esc(g.owner) : ""} (${g.n}곳) 가져오기</button>`).join("")}<button type="button" data-act="cancel-confirm">취소</button></div></div>` + banner;
+    }
+    if (S.confirm === "wipe") banner = `<div class="confirm">이 브라우저에 저장된 금융기관과 체크·날짜·메모를 모두 지울까요? 단계 구성과 업무 설명은 남습니다. 지우기 전에 ‘백업 파일 저장’을 해 두면 나중에 되살릴 수 있습니다.
+        <button type="button" class="danger" data-act="wipe-yes">모두 지우기</button><button type="button" data-act="cancel-confirm">취소</button></div>` + banner;
     if (S.confirm && S.confirm.restore) banner = `<div class="confirm">‘${esc(S.confirm.name)}’ 백업으로 지금 내용을 모두 바꿀까요? 지금 내용은 사라집니다.
         <button type="button" class="danger" data-act="restore-yes">불러오기</button><button type="button" data-act="cancel-confirm">취소</button></div>` + banner;
     $("banner").innerHTML = banner;
@@ -870,24 +878,32 @@ window.LOCAL_SEED = {"ex1": {"checkHeader": "", "checkLabel": "연결여부", "c
         status("백업 파일을 저장했습니다.");
         break;
       }
-      case "restore": {
-        const inp = document.createElement("input");
-        inp.type = "file"; inp.accept = ".json,application/json";
-        inp.onchange = () => {
-          const f = inp.files && inp.files[0]; if (!f) return;
-          const rd = new FileReader();
-          rd.onload = () => {
-            try {
-              const j = JSON.parse(rd.result);
-              if (!j || j.app !== "work-stages" || !j.stages) throw new Error();
-              S.confirm = { restore: j.stages, name: f.name }; render();
-            } catch (e) { status("이 페이지에서 저장한 백업 파일이 아닙니다. 파일을 확인해 주세요.", true); }
-          };
-          rd.readAsText(f);
-        };
-        inp.click();
+      case "restore": pickBackup((j, name) => { S.confirm = { restore: j.stages, name }; render(); }); break;
+      case "merge": pickBackup((j, name) => {
+        const gs = (Object.values(j.stages).find((x) => Array.isArray(x.groups) && x.groups.length) || {}).groups || [];
+        const src = Object.values(j.stages).find((x) => Array.isArray(x.groups)) || {};
+        const first = gs[0] && gs[0].id;
+        const groups = gs.map((g) => ({ ...g, n: (src.rows || []).filter((r) => (r.group || first) === g.id && ((r.values || {}).inst || "").trim()).length }));
+        S.confirm = { merge: j.stages, name, groups }; render();
+      }); break;
+      case "merge-yes": {
+        const m = S.confirm && S.confirm.merge; S.confirm = null;
+        if (m) { const n = mergeGroup(m, b.dataset.g); status(`기록을 합쳤습니다. (${n}곳)`); }
         break;
       }
+      case "wipe": S.confirm = "wipe"; render(); break;
+      case "wipe-yes": {
+        S.confirm = null;
+        const d = S.db.dump();
+        Object.values(d).forEach((st) => {
+          if (Array.isArray(st.rows)) st.rows = [];
+          if (Array.isArray(st.groups)) st.groups = st.groups.map((g) => ({ ...g, owner: "" }));
+          ["docs", "pack"].forEach((k) => { if (st[k]) st[k] = {}; });
+        });
+        S.db.load(d); status("모두 지웠습니다.");
+        break;
+      }
+      case "copy-sheet": copySheet(getStage(S.current)); break;
       case "restore-yes": { const d = S.confirm && S.confirm.restore; S.confirm = null; if (d) { S.db.load(d); status("백업을 불러왔습니다."); } break; }
       case "view": S.view = b.dataset.v; try { localStorage.setItem(VKEY, S.view); } catch (e) {} render(); break;
       case "toggle-list": {
@@ -1127,6 +1143,95 @@ window.LOCAL_SEED = {"ex1": {"checkHeader": "", "checkLabel": "연결여부", "c
   });
 
   // 체험용: 페이지에 들어 있는 예시 데이터를 메모리에서만 다룸 (새로고침하면 처음 상태로)
+  // 백업 파일 고르기
+  function pickBackup(done) {
+    const inp = document.createElement("input");
+    inp.type = "file"; inp.accept = ".json,application/json";
+    inp.onchange = () => {
+      const f = inp.files && inp.files[0]; if (!f) return;
+      const rd = new FileReader();
+      rd.onload = () => {
+        try {
+          const j = JSON.parse(rd.result);
+          if (!j || j.app !== "work-stages" || !j.stages) throw new Error();
+          done(j, f.name);
+        } catch (e) { status("이 페이지에서 저장한 백업 파일이 아닙니다. 파일을 확인해 주세요.", true); }
+      };
+      rd.readAsText(f);
+    };
+    inp.click();
+  }
+  // 다른 사람 백업에서 한 담당의 기록만 가져와 합치기 (그 담당 기록은 파일 내용으로 교체)
+  function mergeGroup(other, gid) {
+    const cur = S.db.dump();
+    const ck = Object.keys(cur).find((k) => Array.isArray(cur[k].groups) && cur[k].groups.length);
+    const ok = Object.keys(other).find((k) => Array.isArray(other[k].groups) && other[k].groups.length);
+    if (!ck || !ok) return 0;
+    const cFirst = cur[ck].groups[0].id, oFirst = other[ok].groups[0].id;
+    const mineC = (r) => (r.group || cFirst) === gid, mineO = (r) => (r.group || oFirst) === gid;
+    const removed = (cur[ck].rows || []).filter(mineC).map((r) => r.id);
+    const added = (other[ok].rows || []).filter(mineO).map((r) => ({ ...r, group: gid }));
+    cur[ck].rows = (cur[ck].rows || []).filter((r) => !mineC(r)).concat(added);
+    const og = other[ok].groups.find((g) => g.id === gid);
+    if (og && og.owner) cur[ck].groups = cur[ck].groups.map((g) => (g.id === gid ? { ...g, owner: og.owner } : g));
+    Object.keys(cur).forEach((k) => ["docs", "pack"].forEach((f) => {
+      if (!cur[k][f] && !(other[k] && other[k][f])) return;
+      const m = { ...(cur[k][f] || {}) };
+      removed.forEach((id) => delete m[id]);
+      added.forEach((r) => { const v = other[k] && other[k][f] && other[k][f][r.id]; if (v) m[r.id] = v; });
+      cur[k][f] = m;
+    }));
+    S.db.load(cur);
+    return added.filter((r) => ((r.values || {}).inst || "").trim()).length;
+  }
+  // 지금 시트의 표를 탭으로 구분된 글로 만들어 클립보드에 복사 → 엑셀에 붙여넣기
+  function copySheet(s) {
+    if (!s || !isTable(s)) return;
+    const gAll = groupsOf(s), firstG = gAll[0] && gAll[0].id;
+    const vg = S.view && S.view !== "all" && gAll.some((g) => g.id === S.view) ? S.view : null;
+    const gname = (r) => { const g = gAll.find((x) => x.id === (r.group || firstG)); return g ? (g.label || "") + (g.owner ? " " + g.owner : "") : ""; };
+    const rows = rowsOf(s).filter((r) => ((r.values || {}).inst || "").trim() && (!vg || (r.group || firstG) === vg));
+    const ck = (v) => (v ? "✓" : "");
+    const dt = (v) => (v ? md(v) : "");
+    let head = [], data = [];
+    if (s.mode === "track") {
+      const ds = getStage(s.docsFrom), cos = companiesOf(s);
+      head = ["담당", "금융기관명", "필요 서류", "대상", "제출 방법", "품의", ...cos.map((c) => c.label + " 인감"), "발송", "발송일", "메모"];
+      data = rows.map((r) => {
+        const p = (s.pack || {})[r.id] || {}, st = sealState(s, ds, r.id);
+        const docs = requiredDocs(ds, r.id).map((q) => q.label + (q.sub ? `(${q.sub})` : "")).join(", ");
+        const tgt = st.target ? st.target + (st.manual ? ` (${st.picked.map((c) => c.label).join(", ")})` : "") : "";
+        const method = (((ds || {}).docs || {})[r.id] || {}).method || "";
+        return [gname(r), r.values.inst, docs, tgt, method, ck(p.approve), ...cos.map((c) => (st.need.has(c.key) ? ck(p["seal_" + c.key]) : "-")), ck(p.sent), dt(p.sentDate), p.memo || ""];
+      });
+    } else if (s.source) {
+      head = ["담당", ...s.columns.map((c) => c.label)];
+      data = rows.map((r) => [gname(r), ...s.columns.map((c) => {
+        const v = (r.values || {})[c.key];
+        if (c.type === "check") return ck(v);
+        if (c.type === "checktext") return v ? (r.values[c.key + "_t"] || "✓") : "";
+        if (c.type === "date") return dt(v);
+        if (c.type === "ext") return dt((((getStage(c.from) || {}).pack || {})[r.id] || {})[c.field]);
+        if (c.type === "select" && c.picks && v === c.warnOn) return v + " (" + c.picks.filter((pk) => r.values[c.key + "_" + pk.key]).map((pk) => pk.label).join(", ") + ")";
+        if (c.type === "scope" && v === c.listOption) return v + " " + countLines(r.values[c.key + "_list"]) + "곳";
+        return v == null ? "" : String(v);
+      })]);
+    } else {
+      head = ["담당", s.checkLabel || "연결", ...s.columns.map((c) => c.label)];
+      data = rows.map((r) => [gname(r), ck(r.done), ...s.columns.map((c) => (c.type === "date" ? dt((r.values || {})[c.key]) : (r.values || {})[c.key] || ""))]);
+    }
+    const cell = (v) => { v = String(v == null ? "" : v); return /[\t\n"]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    const tsv = [head, ...data].map((row) => row.map(cell).join("\t")).join("\n");
+    const ok = () => status(`‘${s.name}’ 표 ${data.length}줄을 복사했습니다. 엑셀에서 붙여넣기(Ctrl+V) 하세요.`);
+    const fallback = () => {
+      const ta = document.createElement("textarea"); ta.value = tsv; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); ok(); } catch (e) { status("복사하지 못했습니다. 브라우저 권한을 확인해 주세요.", true); }
+      ta.remove();
+    };
+    try { navigator.clipboard.writeText(tsv).then(ok, fallback); } catch (e) { fallback(); }
+  }
+
   function memDb(seed, persistKey) {
     const store = JSON.parse(JSON.stringify(seed));
     const subs = [];
