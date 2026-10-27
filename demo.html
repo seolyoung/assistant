@@ -2,15 +2,12 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>내부회계통제 사무보조 체험판</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<title>내부회계통제 사무보조</title>
 <style>
 /* Layout: 엑셀 시트처럼 단계 탭 바 → 선택한 단계 한 장만 보이는 시트 패널. */
 :root {
@@ -31,8 +28,8 @@
   --note: #2c7a4f;
   --note-soft: #e9f2ec;
   --danger: #b4362a;
-  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-body: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --font-mono: Consolas, ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -67,10 +64,32 @@ button.ghost:hover:not(:disabled) { color: var(--accent); border-color: var(--li
 button.danger { color: var(--danger); }
 button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+.tour { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px 20px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.tour-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.tour-head b { display: block; font-size: 1.05rem; color: var(--accent); }
+.tour-head span { font-size: 0.84rem; color: var(--muted); }
+.tour-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.tour-card { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px 15px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); cursor: pointer; transition: border-color .15s, transform .15s; }
+.tour-card:hover, .tour-card:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
+.tc-n { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.06em; }
+.tc-t { font-weight: 700; font-size: 0.98rem; color: var(--fg); }
+.tc-d { font-size: 0.84rem; line-height: 1.55; color: var(--muted); }
+.tc-go { margin-top: auto; padding-top: 4px; font-size: 0.8rem; font-weight: 600; color: var(--accent); }
+.tour-open { align-self: flex-start; border: none; background: transparent; color: var(--accent); font-weight: 600; padding: 0; }
+.tour:has(.tour-open) { padding: 10px 16px; }
+@keyframes spotPulse { 0% { box-shadow: 0 0 0 0 rgba(0,48,135,.55); } 70% { box-shadow: 0 0 0 10px rgba(0,48,135,0); } 100% { box-shadow: 0 0 0 0 rgba(0,48,135,0); } }
+.spot { outline: 3px solid var(--accent) !important; outline-offset: 2px; border-radius: 6px; animation: spotPulse 1.2s ease-out 2; position: relative; z-index: 2; }
+@media (prefers-reduced-motion: reduce) { .spot { animation: none; } .tour-card { transition: none; } }
+@media (max-width: 860px) { .tour-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .tour-grid { grid-template-columns: minmax(0, 1fr); } .tour { padding: 14px; } }
+.mode-link.cta { background: var(--accent); color: var(--surface); border-radius: 6px; padding: 7px 12px; }
+.mode-link.cta:hover { text-decoration: none; filter: brightness(1.1); }
+.mode-link { align-self: center; font-size: 0.86rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 7px 4px; white-space: nowrap; }
+.mode-link:hover { text-decoration: underline; }
+.demo-tag { margin-left: 8px; font-size: 0.8rem; font-weight: 600; vertical-align: middle; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0; }
 .banner.local { border-style: solid; background: var(--surface); }
 .merge-box { flex-direction: column; align-items: flex-start; }
 .banner .bk, .confirm .bk { display: inline-flex; gap: 6px; flex-wrap: wrap; }
-.demo-tag { font-size: 0.8rem; font-weight: 600; vertical-align: middle; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); letter-spacing: 0; }
 .banner.demo { border: 1px solid var(--accent); background: var(--accent-soft); color: var(--fg); border-style: solid; }
 .banner { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 0.88rem; }
 
@@ -338,13 +357,13 @@ mark { background: var(--warn-soft); color: inherit; padding: 0 1px; border-radi
 </style>
 
 <div class="wrap">
-  <a class="home-link" href="./">← 처음 화면</a>
   <header>
     <div>
-      <h1>내부회계통제 사무보조 <span class="demo-tag">체험판</span></h1>
+      <h1>내부회계통제 사무보조<span class="demo-tag" id="demoTag" hidden>체험판</span></h1>
     </div>
     <input id="q" class="search" type="search" placeholder="모든 단계에서 검색" aria-label="업무와 메모 검색">
   </header>
+  <section id="tour" class="tour" hidden></section>
   <div id="banner"></div>
   <div id="viewbar" class="viewbar" hidden></div>
   <div class="book">
@@ -357,12 +376,17 @@ mark { background: var(--warn-soft); color: inherit; padding: 0 1px; border-radi
 </div>
 
 <script>
+// 처음 열었을 때의 빈 양식 (단계·열 구성·업무 설명)
+window.LOCAL_SEED = {"ex1": {"checkHeader": "", "checkLabel": "연결여부", "columns": [{"key": "inst", "label": "금융기관명", "w": 120}, {"auto": true, "key": "date", "label": "안내일", "type": "date", "w": 76}, {"key": "name", "label": "담당자명", "w": 120}, {"key": "phone", "label": "담당자 번호", "w": 140}, {"key": "addr", "label": "주소", "w": 230, "wrap": true}, {"key": "note", "label": "메모", "wrap": true}], "desc": "", "example": false, "groups": [{"id": "g1", "label": "담당 1", "owner": ""}, {"id": "g2", "label": "담당 2", "owner": ""}], "guide": "1. 각 담당자에게 전화해 내용 안내\n2. 담당자 메일로 안내문과 사업장리스트 발송\n3. 완료한 경우 체크박스 표시 (안내일 자동 입력)", "items": [], "name": "조회 요청", "order": 1, "rows": []}, "ex2": {"columns": [{"key": "inst", "label": "금융기관명", "type": "ro", "w": 116}, {"key": "target", "label": "대상", "notDoc": true, "options": ["본사만", "본사+자회사 전체", "일부"], "picks": [{"full": "본사", "key": "hdo", "label": "본사"}, {"full": "자회사 A", "key": "chem", "label": "A사"}, {"full": "자회사 B", "key": "shell", "label": "B사"}, {"full": "자회사 C", "key": "oci", "label": "C사"}, {"full": "자회사 D", "key": "enf", "label": "D사"}], "type": "select", "w": 130, "warnOn": "일부"}, {"key": "method", "label": "제출 방법", "notDoc": true, "options": ["메일", "우편", "방문"], "type": "select", "w": 84}, {"key": "letter", "label": "공문", "type": "check", "w": 64}, {"key": "reg", "label": "등기부 등본", "type": "check", "w": 64}, {"key": "seal", "label": "법인인감 증명서", "type": "check", "w": 64}, {"key": "bizreg", "label": "사업자 등록증", "listOption": "직접 입력", "options": ["ALL", "본사", "본사+자회사", "직접 입력"], "sub": "범위 선택", "type": "scope", "w": 120}, {"key": "consent", "label": "금정서", "options": ["당사 양식", "해당기관"], "sub": "양식 선택", "type": "select", "w": 100}, {"key": "agentid", "label": "대리인 신분증 사본", "type": "check", "w": 72}, {"key": "etc", "label": "기타 문서", "type": "checktext", "w": 156}, {"key": "memo", "label": "메모", "type": "text"}], "desc": "", "example": false, "guide": "1. 담당 금융기관에 제출해야 할 서류 확인 \n2. '대상' 선택: 본사만 / 본사+자회사 전체 / 일부 (일부면 해당 회사 체크)\n3. '제출 방법' 선택: 메일 / 우편 / 방문\n4. 요구하는 서류 체크\n   - 사업자등록증은 범위 선택, '직접 입력'이면 받은 사업장 목록 붙여넣기\n   - 금융거래정보제공동의서는 당사 양식인지 해당 기관 양식인지 선택\n5. 그 외 요구 서류는 '기타문서'에, 특이사항은 메모에 기록\n6. 서류 준비 완료되면 스캔하여 폴더에 저장", "items": [], "name": "필요서류 확인", "order": 2, "source": "ex1"}, "ex3": {"approveBy": "본사", "companies": [{"full": "본사", "hq": true, "key": "hdo", "label": "본사"}, {"full": "자회사 A", "key": "chem", "label": "A사"}, {"full": "자회사 B", "key": "shell", "label": "B사"}, {"full": "자회사 C", "key": "oci", "label": "C사"}, {"full": "자회사 D", "key": "enf", "label": "D사"}], "desc": "", "docsFrom": "ex2", "example": false, "guide": "1. 본사 품의 상신 → 승인되면 '품의' 체크\n2. 본사 및 대상 자회사에 인감 날인 요청 (자회사 품의는 각 회사에서 진행)\n3. 회사별로 날인된 서류를 받으면 해당 칸 체크 → 스캔 후 폴더에 저장\n4. 열린 인감 칸이 모두 체크되면 서류를 모아 제출 방법대로 한 번에 발송\n5. 발송 후 '발송' 체크 (발송일 자동 입력, 날짜가 다르면 수정)\n6. 등기번호·방문 담당자 등은 메모에 기록", "items": [], "mode": "track", "name": "서류 발송", "order": 3, "source": "ex1"}, "ex4": {"columns": [{"key": "inst", "label": "금융기관명", "type": "ro", "w": 116}, {"elapsedUntil": "reply", "field": "sentDate", "from": "ex3", "key": "sent", "label": "발송일", "sub": "3단계에서 자동", "type": "ext", "w": 90, "warnDays": 4}, {"elapsedUntil": "reply", "key": "remind", "label": "독촉일", "type": "date", "w": 84, "warnDays": 4}, {"key": "reply", "label": "회신일", "type": "date", "w": 84}, {"key": "rmethod", "label": "회신 방법", "options": ["메일", "우편", "방문"], "type": "select", "w": 90}, {"key": "filed", "label": "폴더 저장", "sub": "스캔 후 체크", "type": "check", "w": 76}, {"key": "memo", "label": "메모", "type": "text"}], "desc": "", "doneKey": "reply", "doneLabel": "회신", "example": false, "guide": "1. 발송일 아래 경과일 확인 (4일 이상이면 빨간색으로 표시됨)\n2. 회신이 늦는 기관은 담당자에게 전화·메일로 독촉 → '독촉일' 입력\n3. 회신을 받으면 '회신일' 입력 (줄이 초록색으로 바뀜)\n4. '회신 방법' 선택: 메일 / 우편 / 방문\n5. 받은 조회내역은 스캔하여 폴더에 보관하고 '폴더 저장' 체크, 금액·내용 이상 여부 확인\n6. 재요청·누락 서류 등 특이사항은 메모에 기록", "items": [], "name": "결과 회신", "order": 4, "source": "ex1"}};
+</script>
+<script>
 // 체험용 예시 데이터 ("@-3" = 오늘로부터 3일 전)
-window.DEMO_DATA = (function (d) {
+window.__DEMO_SEED = (function (d) {
   const day = (n) => { const t = new Date(); t.setDate(t.getDate() + n); return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0"); };
   const walk = (o) => { for (const k in o) { const v = o[k]; if (typeof v === "string" && /^@-?\d+$/.test(v)) o[k] = day(+v.slice(1)); else if (v && typeof v === "object") walk(v); } return o; };
   return walk(d);
 })({"ex1": {"checkHeader": "", "checkLabel": "연결여부", "columns": [{"key": "inst", "label": "금융기관명", "w": 120}, {"auto": true, "key": "date", "label": "안내일", "type": "date", "w": 76}, {"key": "name", "label": "담당자명", "w": 120}, {"key": "phone", "label": "담당자 번호", "w": 140}, {"key": "addr", "label": "주소", "w": 230, "wrap": true}, {"key": "note", "label": "메모", "wrap": true}], "groups": [{"id": "g1", "label": "담당 1", "owner": "김하늘"}, {"id": "g2", "label": "담당 2", "owner": "최바다"}], "guide": "1. 각 담당자에게 전화해 내용 안내\n2. 담당자 메일로 안내문과 사업장리스트 발송\n3. 완료한 경우 체크박스 표시 (안내일 자동 입력)", "name": "조회 요청", "order": 1, "rows": [{"id": "d1", "group": "g1", "done": true, "values": {"inst": "하나은행", "date": "@-9", "name": "김○○ 과장", "phone": "02-0000-0001", "addr": "서울 중구 ○○로 00, 0층", "note": "서류 목록은 메일로 받기로 함"}}, {"id": "d2", "group": "g1", "done": true, "values": {"inst": "신한은행", "date": "@-7", "name": "이○○ 대리", "phone": "010-0000-0002", "addr": "서울 중구 ○○대로 00", "note": ""}}, {"id": "d3", "group": "g1", "done": true, "values": {"inst": "우리은행", "date": "@-3", "name": "박○○ 차장", "phone": "02-0000-0003", "addr": "서울 종로구 ○○길 00", "note": ""}}, {"id": "d4", "group": "g1", "done": false, "values": {"inst": "미래에셋증권", "name": "정○○ 대리", "phone": "02-0000-0004", "note": "전화 연결 안 됨.\n내일 오전에 다시 전화"}}, {"id": "d5", "group": "g2", "done": true, "values": {"inst": "국민은행", "date": "@-8", "name": "최○○ 과장", "phone": "02-0000-0005", "addr": "서울 영등포구 ○○로 00", "note": ""}}, {"id": "d6", "group": "g2", "done": true, "values": {"inst": "농협은행", "date": "@-5", "name": "한○○ 주임", "phone": "010-0000-0006", "addr": "서울 중구 ○○로 00", "note": "우편 접수만 가능"}}, {"id": "d7", "group": "g2", "done": false, "values": {"inst": "기업은행"}}, {"id": "d8", "group": "g2", "done": false, "values": {"inst": "삼성증권"}}], "example": false, "items": [], "desc": ""}, "ex2": {"columns": [{"key": "inst", "label": "금융기관명", "type": "ro", "w": 116}, {"key": "target", "label": "대상", "notDoc": true, "options": ["본사만", "본사+자회사 전체", "일부"], "picks": [{"full": "본사", "key": "hdo", "label": "본사"}, {"full": "자회사 A", "key": "chem", "label": "A사"}, {"full": "자회사 B", "key": "shell", "label": "B사"}, {"full": "자회사 C", "key": "oci", "label": "C사"}, {"full": "자회사 D", "key": "enf", "label": "D사"}], "type": "select", "w": 130, "warnOn": "일부"}, {"key": "method", "label": "제출 방법", "notDoc": true, "options": ["메일", "우편", "방문"], "type": "select", "w": 84}, {"key": "letter", "label": "공문", "type": "check", "w": 64}, {"key": "reg", "label": "등기부 등본", "type": "check", "w": 64}, {"key": "seal", "label": "법인인감 증명서", "type": "check", "w": 64}, {"key": "bizreg", "label": "사업자 등록증", "listOption": "직접 입력", "options": ["ALL", "본사", "본사+자회사", "직접 입력"], "sub": "범위 선택", "type": "scope", "w": 120}, {"key": "consent", "label": "금정서", "options": ["당사 양식", "해당기관"], "sub": "양식 선택", "type": "select", "w": 100}, {"key": "agentid", "label": "대리인 신분증 사본", "type": "check", "w": 72}, {"key": "etc", "label": "기타 문서", "type": "checktext", "w": 156}, {"key": "memo", "label": "메모", "type": "text"}], "docs": {"d1": {"target": "본사+자회사 전체", "method": "우편", "letter": true, "reg": true, "seal": true, "bizreg": "ALL", "consent": "당사 양식", "agentid": true}, "d2": {"target": "일부", "target_hdo": true, "target_chem": true, "target_oci": true, "method": "메일", "letter": true, "seal": true, "bizreg": "직접 입력", "bizreg_list": "○○공장\n○○사업소\n서울사무소", "consent": "해당기관"}, "d3": {"target": "본사만", "method": "방문", "letter": true, "reg": true, "bizreg": "본사"}, "d5": {"target": "본사+자회사 전체", "method": "메일", "letter": true, "reg": true, "seal": true, "consent": "당사 양식", "etc": true, "etc_t": "위임장"}, "d6": {"target": "본사만", "method": "우편", "letter": true, "bizreg": "본사", "agentid": true, "memo": "원본 우편 접수만 가능"}}, "guide": "1. 담당 금융기관에 제출해야 할 서류 확인 \n2. '대상' 선택: 본사만 / 본사+자회사 전체 / 일부 (일부면 해당 회사 체크)\n3. '제출 방법' 선택: 메일 / 우편 / 방문\n4. 요구하는 서류 체크\n   - 사업자등록증은 범위 선택, '직접 입력'이면 받은 사업장 목록 붙여넣기\n   - 금융거래정보제공동의서는 당사 양식인지 해당 기관 양식인지 선택\n5. 그 외 요구 서류는 '기타문서'에, 특이사항은 메모에 기록\n6. 서류 준비 완료되면 스캔하여 폴더에 저장", "name": "필요서류 확인", "order": 2, "source": "ex1", "example": false, "items": [], "desc": ""}, "ex3": {"approveBy": "본사", "companies": [{"full": "본사", "hq": true, "key": "hdo", "label": "본사"}, {"full": "자회사 A", "key": "chem", "label": "A사"}, {"full": "자회사 B", "key": "shell", "label": "B사"}, {"full": "자회사 C", "key": "oci", "label": "C사"}, {"full": "자회사 D", "key": "enf", "label": "D사"}], "docsFrom": "ex2", "guide": "1. 본사 품의 상신 → 승인되면 '품의' 체크\n2. 본사 및 대상 자회사에 인감 날인 요청 (자회사 품의는 각 회사에서 진행)\n3. 회사별로 날인된 서류를 받으면 해당 칸 체크 → 스캔 후 폴더에 저장\n4. 열린 인감 칸이 모두 체크되면 서류를 모아 제출 방법대로 한 번에 발송\n5. 발송 후 '발송' 체크 (발송일 자동 입력, 날짜가 다르면 수정)\n6. 등기번호·방문 담당자 등은 메모에 기록", "mode": "track", "name": "서류 발송", "order": 3, "pack": {"d1": {"approve": true, "seal_hdo": true, "seal_chem": true, "seal_shell": true, "seal_oci": true, "seal_enf": true, "sent": true, "sentDate": "@-6", "memo": "등기번호 0000-0000-0000"}, "d2": {"approve": true, "seal_hdo": true, "seal_chem": true}, "d5": {"approve": true, "seal_hdo": true, "seal_chem": true, "seal_shell": true, "seal_oci": true, "seal_enf": true, "sent": true, "sentDate": "@-2"}, "d6": {"approve": true}}, "source": "ex1", "example": false, "items": [], "desc": ""}, "ex4": {"columns": [{"key": "inst", "label": "금융기관명", "type": "ro", "w": 116}, {"elapsedUntil": "reply", "field": "sentDate", "from": "ex3", "key": "sent", "label": "발송일", "sub": "3단계에서 자동", "type": "ext", "w": 90, "warnDays": 4}, {"elapsedUntil": "reply", "key": "remind", "label": "독촉일", "type": "date", "w": 84, "warnDays": 4}, {"key": "reply", "label": "회신일", "type": "date", "w": 84}, {"key": "rmethod", "label": "회신 방법", "options": ["메일", "우편", "방문"], "type": "select", "w": 90}, {"key": "filed", "label": "폴더 저장", "sub": "스캔 후 체크", "type": "check", "w": 76}, {"key": "memo", "label": "메모", "type": "text"}], "docs": {"d1": {"remind": "@-2", "memo": "담당자 휴가, 다음 주 회신 예정"}, "d5": {"reply": "@0", "rmethod": "메일", "filed": true}}, "doneKey": "reply", "doneLabel": "회신", "guide": "1. 발송일 아래 경과일 확인 (4일 이상이면 빨간색으로 표시됨)\n2. 회신이 늦는 기관은 담당자에게 전화·메일로 독촉 → '독촉일' 입력\n3. 회신을 받으면 '회신일' 입력 (줄이 초록색으로 바뀜)\n4. '회신 방법' 선택: 메일 / 우편 / 방문\n5. 받은 조회내역은 스캔하여 폴더에 보관하고 '폴더 저장' 체크, 금액·내용 이상 여부 확인\n6. 재요청·누락 서류 등 특이사항은 메모에 기록", "name": "결과 회신", "order": 4, "source": "ex1", "example": false, "items": [], "desc": ""}});
+if (!/[?&]mode=app/.test(location.search)) window.DEMO_DATA = window.__DEMO_SEED; // 기본은 체험판
 </script>
 <script>
 (function () {
@@ -378,7 +402,7 @@ window.DEMO_DATA = (function (d) {
   const uid = () => Math.random().toString(36).slice(2, 10);
   const pad = (n) => String(n).padStart(2, "0");
   const TAGS = { warn: "주의", note: "특이" };
-  const LS = "work-stage-current-demo";
+  const LS = "work-stage-current" + (window.DEMO_DATA ? "-demo" : "");
   const remember = (id) => { try { localStorage.setItem(LS, id); } catch (e) {} };
   const recalled = () => { try { return localStorage.getItem(LS); } catch (e) { return null; } };
 
@@ -476,7 +500,7 @@ window.DEMO_DATA = (function (d) {
   }
 
   // 담당자별 보기: 전체 / 담당 1 / 담당 2 (이 기기에서만 기억)
-  const VKEY = "work-stage-view-demo";
+  const VKEY = "work-stage-view" + (window.DEMO_DATA ? "-demo" : "");
   try { S.view = localStorage.getItem(VKEY) || "all"; } catch (e) { S.view = "all"; }
   function renderViewbar() {
     const gs = (S.stages.find((x) => Array.isArray(x.groups) && x.groups.length) || {}).groups || [];
@@ -797,6 +821,41 @@ window.DEMO_DATA = (function (d) {
     if (keep) { const el = document.getElementById(keep.id); if (el) { el.value = keep.v; el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} } }
   }
 
+  // ── 체험판: 주요 기능 소개 카드 (누르면 해당 화면으로 이동해 강조) ──
+  const TOUR = [
+    { n: "01", t: "단계별 시트 · 자동 연동", d: "조회 요청 → 필요서류 → 발송 → 회신, 4단계를 탭으로 나눔. 1단계에 금융기관만 입력하면 2~4단계에 자동으로 나타남", go: { stage: 0, view: "all", spot: ".tabs" } },
+    { n: "02", t: "담당자별 보기", d: "알바생 두 명이 각자 맡은 금융기관만 골라 보고, 담당별 진행 현황을 숫자로 확인", go: { stage: 0, view: "g1", spot: "#viewbar" } },
+    { n: "03", t: "기관별 요구 서류 체크", d: "대상 범위(본사만·전체·일부), 제출 방법, 서류 종류를 기관마다 기록. '일부'면 해당 회사를 직접 선택", go: { stage: 1, view: "all", spot: "td.sc.warn" } },
+    { n: "04", t: "회사별 인감 칸 자동 활성화", d: "2단계에서 고른 대상에 맞춰 회사별 인감 칸이 자동으로 열리고, 대상이 아닌 회사는 회색으로 막힘", go: { stage: 2, view: "all", spot: "tr:has(td.ck.na)" } },
+    { n: "05", t: "회신 지연 경고", d: "발송·독촉 후 지난 날짜를 표시하고, 4일 이상 회신이 없으면 빨간색으로 강조", go: { stage: 3, view: "all", spot: "td:has(.ext-age.late), td:has(> .dt-wrap .ext-age.late)" } },
+    { n: "06", t: "엑셀로 복사 · 기록 합치기", d: "표를 엑셀에 그대로 붙여넣고, 빈 양식에서는 두 사람의 백업 파일을 담당 단위로 합쳐 전체를 확인", go: { stage: 2, view: "all", spot: 'button[data-act="copy-sheet"]' } },
+  ];
+  const TKEY = "work-stages-tour-closed";
+  function renderTour() {
+    const el = $("tour");
+    if (!window.DEMO_DATA) { el.hidden = true; return; }
+    let closed = false; try { closed = localStorage.getItem(TKEY) === "1"; } catch (e) {}
+    el.hidden = false;
+    if (closed) { el.innerHTML = `<button type="button" class="tour-open" data-act="tour-open">주요 기능 보기 ▾</button>`; return; }
+    el.innerHTML = `<div class="tour-head"><div><b>이 페이지에서 할 수 있는 것</b><span>카드를 누르면 해당 기능이 있는 화면으로 이동합니다</span></div>
+      <button type="button" class="ghost" data-act="tour-close">접기 ▴</button></div>
+      <div class="tour-grid">${TOUR.map((f, i) => `<button type="button" class="tour-card" data-act="tour-go" data-i="${i}">
+        <span class="tc-n">${f.n}</span><span class="tc-t">${f.t}</span><span class="tc-d">${f.d}</span><span class="tc-go">화면에서 보기 →</span></button>`).join("")}</div>`;
+  }
+  function tourGo(i) {
+    const f = TOUR[i] && TOUR[i].go; if (!f) return;
+    const st = S.stages[f.stage]; if (!st) return;
+    S.view = f.view; S.current = st.id; S.editing = null; S.confirm = null;
+    render();
+    setTimeout(() => {
+      const tgt = document.querySelector(f.spot) || document.querySelector(".tabs");
+      if (!tgt) return;
+      tgt.scrollIntoView({ block: "center", behavior: "smooth" });
+      tgt.classList.remove("spot"); void tgt.offsetWidth; tgt.classList.add("spot");
+      setTimeout(() => tgt.classList.remove("spot"), 2600);
+    }, 60);
+  }
+
   function renderInner() {
     const list = S.stages;
     if (list.length && !getStage(S.current)) {
@@ -809,8 +868,8 @@ window.DEMO_DATA = (function (d) {
     if (S.confirm === "examples") banner = `<div class="confirm">예시 시트 ${list.filter((s) => s.example).length}개를 모두 지울까요? 되돌릴 수 없습니다.
         <button type="button" class="danger" data-act="clear-examples-yes">지우기</button><button type="button" data-act="cancel-confirm">취소</button></div>`;
     if (S.local) banner = `<div class="banner local"><span>입력한 내용은 <b>지금 이 브라우저에만</b> 저장됩니다. 다른 컴퓨터로 옮기거나 인수인계할 때는 백업 파일을 저장해 전달하세요.</span>
-      <span class="bk"><button type="button" data-act="backup">백업 파일 저장</button><button type="button" data-act="restore">백업 불러오기</button><button type="button" data-act="merge">다른 사람 기록 합치기</button><button type="button" class="danger" data-act="wipe">전체 삭제</button></span></div>` + banner;
-    if (window.DEMO_DATA) banner = `<div class="banner demo"><span><b>체험용 예시 페이지</b>입니다. 이름·연락처는 모두 가상의 예시이고, 자유롭게 눌러 보셔도 됩니다. 새로고침하면 처음 상태로 돌아갑니다.</span></div>` + banner;
+      <span class="bk"><button type="button" data-act="backup">백업 파일 저장</button><button type="button" data-act="restore">백업 불러오기</button><button type="button" data-act="merge">다른 사람 기록 합치기</button><button type="button" class="danger" data-act="wipe">전체 삭제</button><a class="mode-link" href="?">← 체험판 보기</a></span></div>` + banner;
+    if (window.DEMO_DATA) banner = `<div class="banner demo"><span><b>체험용 예시 페이지</b>입니다. 이름·연락처는 모두 가상의 예시이고, 자유롭게 눌러 보셔도 됩니다. 새로고침하면 처음 상태로 돌아갑니다.</span><a class="mode-link cta" href="?mode=app">빈 양식으로 시작하기 →</a></div>` + banner;
     if (S.confirm && S.confirm.merge) {
       banner = `<div class="confirm merge-box"><div><b>‘${esc(S.confirm.name)}’</b>에서 가져올 담당을 고르세요. 고른 담당의 금융기관과 2~4단계 기록이 이 파일의 내용으로 바뀌고, 다른 담당 기록은 그대로 둡니다.</div>
         <div class="bk">${S.confirm.groups.map((g) => `<button type="button" data-act="merge-yes" data-g="${g.id}">${esc(g.label)}${g.owner ? " · " + esc(g.owner) : ""} (${g.n}곳) 가져오기</button>`).join("")}<button type="button" data-act="cancel-confirm">취소</button></div></div>` + banner;
@@ -821,6 +880,7 @@ window.DEMO_DATA = (function (d) {
         <button type="button" class="danger" data-act="restore-yes">불러오기</button><button type="button" data-act="cancel-confirm">취소</button></div>` + banner;
     $("banner").innerHTML = banner;
     renderViewbar();
+    renderTour();
     renderTabs();
     renderPanel();
   }
@@ -909,6 +969,9 @@ window.DEMO_DATA = (function (d) {
       }
       case "copy-sheet": copySheet(getStage(S.current)); break;
       case "restore-yes": { const d = S.confirm && S.confirm.restore; S.confirm = null; if (d) { S.db.load(d); status("백업을 불러왔습니다."); } break; }
+      case "tour-go": tourGo(+b.dataset.i); break;
+      case "tour-close": try { localStorage.setItem(TKEY, "1"); } catch (e) {} render(); break;
+      case "tour-open": try { localStorage.removeItem(TKEY); } catch (e) {} render(); break;
       case "view": S.view = b.dataset.v; try { localStorage.setItem(VKEY, S.view); } catch (e) {} render(); break;
       case "toggle-list": {
         const key = b.dataset.r + ":" + b.dataset.k;
@@ -1273,6 +1336,7 @@ window.DEMO_DATA = (function (d) {
       render();
     }, () => { status("실시간 연결이 끊겼습니다. 새로고침하면 다시 연결됩니다.", true); });
   }
+  if (window.DEMO_DATA) { const t = document.getElementById("demoTag"); if (t) t.hidden = false; document.title += " 체험판"; }
   render();
   if (window.DEMO_DATA || window.LOCAL_SEED) {
     // 체험판: 메모리만 / 독립 실행판: 이 브라우저(localStorage)에 저장
